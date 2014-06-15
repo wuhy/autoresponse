@@ -1,0 +1,31 @@
+{
+  "name": "autoresponse",
+  "version": "0.1.0",
+  "description": "Autoresponse middleare using local data or proxy",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "jshint . > jshint.report",
+    "test": "jasmine-node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wuhy/autoresponse.git"
+  },
+  "keywords": [
+    "mock",
+    "autoresponse"
+  ],
+  "author": "sparklewhy@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wuhy/autoresponse/issues"
+  },
+  "homepage": "https://github.com/wuhy/autoresponse",
+  "dependencies": {
+    "formidable": "^1.0.14",
+    "http-proxy": "^1.1.4",
+    "lodash": "^2.4.1",
+    "mime": "^1.2.11",
+    "qs": "^0.6.6"
+  }
+}
