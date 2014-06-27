@@ -3,6 +3,9 @@
  * @author sparklewhy@gmail.com
  */
 
+var pathUtil = require('path');
+var baseDir = __dirname;
+
 module.exports = {
 
     /**
@@ -31,7 +34,7 @@ module.exports = {
      *
      * @type {boolean}
      */
-    autoMock: false,
+    autoMock: true,
 
     /**
      * 自动创建 mock 文件的模板定义，该选项只有 `autoMock` 为 true 时才有效。
@@ -46,7 +49,9 @@ module.exports = {
      *
      * @type {Object}
      */
-    mockDataTpl: null,
+    mockDataTpl: {
+        js: './mock/tpl/data.js'
+    },
 
     /**
      * 获取要请求的 path 的默认的响应数据文件的路径。
@@ -111,9 +116,7 @@ module.exports = {
      *              mock: {
      *                  file: 'a/b.js', // 可以省略，若省略按 `responseFileGenerator`
      *                                  // 生成
-     *                  jsonp: true,
-     *                  callback: 'callback2' // 自定义的jsonp 回调 key，可选，默认
-     *                                        // callback
+     *                  jsonp: true
      *              }
      *          },
      *
@@ -164,7 +167,14 @@ module.exports = {
      *
      * @type {boolean|Array}
      */
-    post: true,
+    post: [
+        {
+            match: '/account/getName',
+            mock: {
+                proxy: 'localhost:7979'
+            }
+        }
+    ],
 
     /**
      * 对 `get` 请求响应内容的配置
@@ -172,7 +182,36 @@ module.exports = {
      *
      * @type {boolean|Array}
      */
-    get: false,
+    get: [
+        {
+            match: '/b.html',
+            mock: 'c.html'
+        },
+        {
+            match: '/a.html',
+            mock: pathUtil.resolve(baseDir, './fixtures/b.html')
+        },
+        {
+            match: '/account/getUserInfo', // or use regex: /account\/getUserInfo/
+            mock: {
+                proxy: 'localhost:9090',
+                path: '/mock/getUserInfo'
+            }
+        },
+        {
+            match: '/test/notfound'
+        },
+        {
+            match: '/data/list',
+            mock: 'data/list.json'
+        },
+        {
+            match: '/php',
+            mock: {
+                path: '/data/test.php'
+            }
+        }
+    ],
 
     /**
      * 基于查询参数进行响应，有时候请求是基于 `query` 参数来区分的
@@ -195,7 +234,18 @@ module.exports = {
      *
      * @type {Object}
      */
-    query: null,
+    query: {
+
+        // e.g., http://localhost:9090/?ajaxPath=/edit/profile
+        ajaxPath: true,
+
+        // e.g., http://localhost:9090/?action=/edit/profile
+        action: [
+            {
+                match: '/edit/profile'
+            }
+        ]
+    },
 
     /**
      * 如果配置了代理，对于上述配置的 post/get/query 所有匹配到请求，如果自身没有指定代理，
@@ -269,6 +319,8 @@ module.exports = {
      *
      * @type {Object}
      */
-    processor: null
+    processor: {
+        json: require('./processors/json-tpl-processor')
+    }
 
 };

@@ -1,9 +1,9 @@
 /**
- * @file 响应静态资源预处理器
+ * @file 响应 TPL 资源预处理器
  * @author sparklewhy@gmail.com
  */
-
 var fs = require('fs');
+var tplEngine = require('./json-tpl-engine');
 
 module.exports = exports = function (mockFile, context, callback) {
     fs.readFile(mockFile.path, function (err, data) {
@@ -11,7 +11,8 @@ module.exports = exports = function (mockFile, context, callback) {
             callback(err);
         }
         else {
-            callback(null, data, mockFile.extname);
+            var result = tplEngine.generateFromTemplate(JSON.parse(data.toString()))
+            callback(null, result, 'json');
         }
     });
 };

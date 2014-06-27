@@ -1,0 +1,16 @@
+{
+    "timeout": 500,
+    "fathers|5-10": [
+        {
+            "married|0-1": true,
+            "name": "@MALE_FIRST_NAME @LAST_NAME",
+            "sons": null,
+            "daughters|0-3": [
+                {
+                    "age|0-31": 0,
+                    "name": "@FEMALE_FIRST_NAME"
+                }
+            ]
+        }
+    ]
+}

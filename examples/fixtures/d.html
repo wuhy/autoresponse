@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello D</title>
+    <script src="lib/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+    This is D
+    <script>
+        $.post('/account/getName', function(data){
+            alert('Get userInfo' + JSON.stringify(data));
+        });
+    </script>
+</body>
+</html>
