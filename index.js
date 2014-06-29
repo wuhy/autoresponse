@@ -88,13 +88,13 @@ module.exports = exports = function (type, userConf) {
         type = null;
     }
 
+    userConf || (userConf = {});
+
     // 设置 log level
     var logLevel = userConf.logLevel;
     if (logLevel) {
         logger.setLevel(String(logLevel).toUpperCase());
     }
-
-    userConf || (userConf = {});
 
     var options = _.merge({}, defaultOptions);
 
