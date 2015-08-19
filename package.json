@@ -24,6 +24,7 @@
   "dependencies": {
     "chokidar": "^1.0.5",
     "etpl": "^3.0.1",
+    "faker": "^3.0.1",
     "formidable": "^1.0.14",
     "http-proxy": "^1.1.4",
     "lodash": "^2.4.1",
