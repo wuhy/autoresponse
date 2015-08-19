@@ -14,14 +14,25 @@ npm install autoresponse
 
 ```javascript
 var autoresponse = require('autoresponse')({ 
-    watch: true,      // 配置文件变化，自动重新加载
-    logLevel: 'info'  // 要打印的 log level
+    watch: true,      // reload autoresponse-config.js file when the file is changed
+    logLevel: 'info'  // the log level to be printed
 });
 app.use(autoresponse);
 app.use(connect.static('./webroot'));
 ```
 
-自动响应配置，可以通过上述参数配置传入，建议通过 `autoresponse-config.js` 配置文件定义，关于配置说明请参考 `examples` 目录
+自动响应配置，可以通过上述参数配置传入，如果有频繁修改 mock 的映射的，建议通过 `autoresponse-config.js` 配置文件定义，关于配置说明请参考 `examples` 目录，否则可以直接通过创建 `autoresponse` 实例时候直接传入：
+
+```javascript
+var autoresponse = require('autoresponse')({
+    logLevel: 'info',
+    get: [
+        match: function (reqPathName) { // mock all `/xx/xx` path
+            return !/\.\w+(\?.*)?$/.test(reqPathName);
+        }
+    ]
+});
+```
 
 ## Using with [edp webserver](https://github.com/ecomfe/edp-webserver)
 
@@ -51,18 +62,19 @@ exports.getLocations = function () {
 };
 ```
 
-## 一个简单配置文件说明
+## A simple autoresponse configure example
 
-在当前 webserver 根目录下创建 `autoreponse-config.js`  
+Create `autoreponse-config.js` file in your web root.
 
 ```javascript
 module.exports = {
-    // 要响应的数据跟目录
+    // The response directory to mock, by default is `mock`
     responseDir: './mock',
 
     /**
-     * 对 `get` 请求响应内容的配置
-     * 也支持 对 post 和 query 参数 进行自动响应，可以参见 examples
+     * configure the `get` request, determine the request path and the file to be mocked.
+     * You can also configure the `post` request and `query` params to mock.
+     * More information, please refer to examples.
      *
      * @type {boolean|Array}
      */
@@ -91,9 +103,146 @@ module.exports = {
             mock: {
                 path: '/data/test.php' // rewrite request path
             }
+        },
+        {
+            match: '/a/b',
+            mock: 'a/b.php' // mock with php file which is processed by php processor
+        },
+        '/account/getUserInfo', // specify the match path
+        function (reqPath, context) { // using function to determine which request to mock
+            return {
+                match: 'a/b'
+            };
         }
     ] 
 };
 ```
 
- 
+## Using smarty processor
+
+Convert `json` data to `html` or `html segment` using `smarty` template engine.
+
+**prepare：**
+
+* install php-cgi
+    * [for mac](https://gist.github.com/xiangshouding/9359739)
+    * [for windows](https://gist.github.com/lily-zhangying/9295c5221fa29d429d52)
+
+* processor configure
+
+```javascript
+// add this config to autoresponse
+processor: {
+    smarty: {
+        // specify the initialize configure file, the file path is relative to `responseDir`
+        // the file content you can refer beblow
+        initerFile: './initer.php',
+
+        // you also can specify your php-cgi path here, default using `php-cgi`
+        php: {bin: '<php-cgi path>'}
+    }
+}
+```
+
+```php
+<?php
+
+// ============== initer.php ================
+
+error_reporting(0);
+ini_set('error_reporting', E_ALL & ~E_NOTICE);
+
+$project_root = dirname(dirname(__FILE__));
+
+require dirname($project_root) . '/libs/Smarty.class.php';
+
+// initialize the smarty variable
+$smarty = new Smarty;
+
+$smarty->force_compile = true;
+$smarty->debugging = false;
+$smarty->caching = false;
+
+// specify the delimiter chararter
+$smarty->left_delimiter = '{';
+$smarty->right_delimiter = '}';
+
+// setting the template directory and output directory for compilation
+$smarty->setTemplateDir($project_root . '/templates/');
+$smarty->setCompileDir($project_root . '/templates_c/');
+```
+
+* write smarty json data using js processor
+
+    * output html document
+
+        ```javascript
+        module.exports = function (path, queryParam, postParam) {
+            return {
+                // of course, you can specify the delay time with a random value between 0 and 100
+                _timeout: '0,100',
+
+                // if you wanna simulate the special status, you can use this
+                _status: 404,
+
+                // mean that the json data will be processed by smarty processor
+                _process: 'smarty',
+
+                // the smarty template name will be rendered
+                _tpl: 'a/b.tpl',
+
+                // define the template data to be applied to smarty template file
+                _data: {
+                    extData: [],
+                    tplData: {}
+                }
+            };
+        };
+        ```
+
+    * output json with smarty render result
+
+
+        ```javascript
+        module.exports = function (path, queryParam, postParam) {
+            return {
+                // mean that the json data will be processed by smarty processor
+                _process: 'smarty',
+
+                filters: [],
+
+                // the smarty render result will be replaced as `filterTpl` value
+                filterTpl: {
+                     // the smarty template name will be rendered
+                     _tpl: 'filter.tpl',
+                     // define the template data to be applied to smarty template file
+                     _data: {
+                         extData: [],
+                         tplData: {}
+                     }
+                }
+            };
+        };
+        ```
+
+
+## Using mock helper method
+
+By default, if you use js file to mock, you can access `mock` global variable in your mock file.
+
+The following methods is provided by default:
+
+* `mock._`: [lodash](https://lodash.com/docs) variable
+
+* `mock.m`: [moment](http://momentjs.com/docs/) variable
+
+* `mock.fake(format, locale)`: [faker](http://marak.com/faker.js/)
+
+* `mock.fakeCN(format)`: generate chinese locale random information
+
+* `mock.fakeEN(format)`: is equivalent to `mock.fake(format)`, geneate english locale random information
+
+* `mock.faker(locale)`: get `faker` instance with the specified locale, the locale is default english
+
+
+More details, please refer to the annotation of `autorespponse-config.js`.
