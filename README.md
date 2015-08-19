@@ -64,7 +64,7 @@ exports.getLocations = function () {
 
 ## A simple autoresponse configure example
 
-Create `autoreponse-config.js` file in your web root.
+Create `autoreponse-config.js` file in your web document root.
 
 ```javascript
 module.exports = {
@@ -135,7 +135,7 @@ Convert `json` data to `html` or `html segment` using `smarty` template engine.
 processor: {
     smarty: {
         // specify the initialize configure file, the file path is relative to `responseDir`
-        // the file content you can refer beblow
+        // the file content you can refer below
         initerFile: './initer.php',
 
         // you also can specify your php-cgi path here, default using `php-cgi`
@@ -185,7 +185,7 @@ $smarty->setCompileDir($project_root . '/templates_c/');
                 // if you wanna simulate the special status, you can use this
                 _status: 404,
 
-                // mean that the json data will be processed by smarty processor
+                // tell autoresponse that the json data will be processed by smarty processor
                 _process: 'smarty',
 
                 // the smarty template name will be rendered
@@ -206,12 +206,12 @@ $smarty->setCompileDir($project_root . '/templates_c/');
         ```javascript
         module.exports = function (path, queryParam, postParam) {
             return {
-                // mean that the json data will be processed by smarty processor
+                // the json data will be processed by smarty processor
                 _process: 'smarty',
 
                 filters: [],
 
-                // the smarty render result will be replaced as `filterTpl` value
+                // the smarty render result will be replaced as the value of `filterTpl`
                 filterTpl: {
                      // the smarty template name will be rendered
                      _tpl: 'filter.tpl',
@@ -230,19 +230,24 @@ $smarty->setCompileDir($project_root . '/templates_c/');
 
 By default, if you use js file to mock, you can access `mock` global variable in your mock file.
 
-The following methods is provided by default:
+The following methods are provided by default:
 
 * `mock._`: [lodash](https://lodash.com/docs) variable
 
 * `mock.m`: [moment](http://momentjs.com/docs/) variable
 
-* `mock.fake(format, locale)`: [faker](http://marak.com/faker.js/)
+* `mock.fake(format, locale)`: the encapsulation of [faker](http://marak.com/faker.js/)
+
+    ```javascript
+    // more api and variable name, please refer faker api docs
+    mock.fake('{{name.firstName}}-{{name.lastName}}');
+    ```
 
 * `mock.fakeCN(format)`: generate chinese locale random information
 
-* `mock.fakeEN(format)`: is equivalent to `mock.fake(format)`, geneate english locale random information
+* `mock.fakeEN(format)`: is equivalent to `mock.fake(format)`, generate english locale random information
 
-* `mock.faker(locale)`: get `faker` instance with the specified locale, the locale is default english
+* `mock.faker(locale)`: get `faker` instance with the specified locale, the locale argument is default english
 
 
 More details, please refer to the annotation of `autorespponse-config.js`.
