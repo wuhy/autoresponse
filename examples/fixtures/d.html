@@ -9,7 +9,10 @@
     This is D
     <script>
         $.post('/account/getName', function(data){
-            alert('Get userInfo' + JSON.stringify(data));
+            console.log('Get userInfo' + JSON.stringify(data));
+        });
+        $.post('/test/post', {id: 11, country: '中国', data: [23, 'asb']}, function(data){
+            console.log('test post response：' + JSON.stringify(data));
         });
     </script>
 </body>

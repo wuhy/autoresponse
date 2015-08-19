@@ -6,10 +6,12 @@
 var fs = require('fs');
 var pathUtil = require('path');
 var _ = require('lodash');
+var chokidar = require('chokidar');
 
 var edpAutoresponse = require('./lib/edp-autoresponse');
 var autoresponse = require('./lib/autoresponse');
 var defaultOptions = require('./lib/autoresponse-config');
+var mockHelper = require('./lib/processor/mock-helper');
 var logger = require('./lib/logger');
 
 var workingDir = process.cwd();
@@ -37,41 +39,66 @@ function loadUserConfig(configFilePath) {
     catch (ex) {
         logger.error(
             'Try to read User autoresponse config file %s fail: %s',
-            configFilePath, ex
+            configFilePath, ex.stack
         );
         customConfig = {};
     }
 
-    // 添加配置的路径的基目录，配置文件的路径，都是相对于该属性值
-    customConfig.baseDir = workingDir;
     return customConfig;
 }
 
+var oldMockHelperName;
+
 /**
- * 读取用户配置文件，初始化自动响应配置
+ * 获取自动响应配置选项
  *
- * @param {Object} options 自动响应配置
- * @param {boolean} watch 是否监控用户配置文件变化，如果变化，会自动 reload 配置文件，并更新
- *                        自动响应的配置选项
+ * @param {Object} userConf 自定义的选项配置
+ * @return {Object}
  */
-function initAutoresponseOptionFromFile(options, watch) {
+function getAutoresponseOptions(userConf) {
+    var options = {};
+
+    var watch = userConf.watch;
     var configFilePath = pathUtil.join(workingDir, configFile);
-    var updateConfHandler = function (event) {
-        var isChange = event === 'change';
+    var hasCustomConfFile = fs.existsSync(configFilePath);
 
-        if (isChange) {
-            logger.info('Autoresponse config file %s, reload user config file', event);
+    var updateConfHandler = function (path) {
+        if (path) {
+            logger.info('Autoresponse config file %s change, reload user config file', path);
         }
 
-        if (isChange || !event) {
-            _.assign(options, loadUserConfig(configFilePath));
+        _.assign(
+            options, defaultOptions,
+            hasCustomConfFile ? loadUserConfig(configFilePath) : {},
+            userConf
+        );
+
+        // 添加全局的助手工具方法
+        mockHelper.inject(options.helper);
+
+        // 将全局助手工具方法导出成全局变量
+        oldMockHelperName && (global[oldMockHelperName] = undefined);
+        if (options.helperName) {
+            var mockGlobalName = options.helperName;
+            mockHelper.asGlobal(mockGlobalName) && (oldMockHelperName = mockGlobalName);
         }
+
+        // 添加配置的路径的基目录，配置文件的路径，都是相对于该属性值
+        options.baseDir = workingDir;
     };
 
-    if (fs.existsSync(configFilePath)) {
-        watch && fs.watch(configFilePath, updateConfHandler);
+    if (hasCustomConfFile) {
+        // watch && fs.watch(configFilePath, updateConfHandler);
+        if (watch) {
+            chokidar.watch(configFilePath).on('change', updateConfHandler);
+        }
         updateConfHandler();
     }
+    else {
+        updateConfHandler();
+    }
+
+    return options;
 }
 
 /**
@@ -81,6 +108,7 @@ function initAutoresponseOptionFromFile(options, watch) {
  *                 接口规范，另一种是 `edp webserver` 中间件
  *                 有效值 `edp` 或者 不传
  * @param {Object=} userConf 用户自定义的自动响应配置，可选，优先级高于配置文件
+ * @return {Function}
  */
 module.exports = exports = function (type, userConf) {
     if (arguments.length === 1 && _.isPlainObject(type)) {
@@ -96,19 +124,13 @@ module.exports = exports = function (type, userConf) {
         logger.setLevel(String(logLevel).toUpperCase());
     }
 
-    var options = _.merge({}, defaultOptions);
-
-    initAutoresponseOptionFromFile(options, userConf.watch);
-    _.assign(options, userConf);
-
     logger.info('enable autoresponse middleware...');
 
+    var options = getAutoresponseOptions(userConf);
     type && (type = type.toLowerCase());
     if (type === 'edp') {
         return edpAutoresponse(options);
     }
-    else {
-        return autoresponse(options);
-    }
+    return autoresponse(options);
 };
 

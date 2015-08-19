@@ -9,6 +9,25 @@ var baseDir = __dirname;
 module.exports = {
 
     /**
+     * mock 助手全局变量名称
+     *
+     * @type {string}
+     */
+    helperName: 'mock',
+
+    /**
+     * 预定义的助手工具方法，这些方法会被注入到 `helperName` 定义的全局对象里
+     * 如果值为对象，key 为访问的属性名，value 为要加载的模块名 或 function；
+     * e.g., 下述的 lodash 模板，可以全局这样访问： `mock._.merge()`
+     *
+     * 除了通过该选项配置，也可以通过 `mock.inject({a: function() {}})` 方式添加
+     *
+     * @type {Object}
+     */
+    helper: {_: 'lodash', m: 'moment'},
+
+
+    /**
      * 默认 响应请求的超时时间，对于使用代理无效
      *
      * @type {number}
@@ -27,7 +46,7 @@ module.exports = {
      * 对于要自动响应的请求，如果不存在相应的本地要响应的数据文件，是否自动创建。
      *
      * 如果设为 true，会基于 `mockDataTpl` 配置项，自动创建该mock文件，如果未设置
-     * 数据模板，则只是简单创建一个空文件。
+     * 数据模板，则只是简单创建 一个空文件。
      *
      * 如果设为 false，对于要 mock 请求找不到本地 mock 数据文件，则只会打印出错信息，
      * 然后以 404 响应。
@@ -50,7 +69,7 @@ module.exports = {
      * @type {Object}
      */
     mockDataTpl: {
-        js: './mock/tpl/data.js'
+        js: './tpl/data.js'
     },
 
     /**
@@ -136,7 +155,7 @@ module.exports = {
      *                      return '/mock/user/getDescr.php'
      *                  }
      *              }
-     *          }
+     *          },
      *
      *          // 使用代理
      *          {
@@ -173,7 +192,8 @@ module.exports = {
             mock: {
                 proxy: 'localhost:7979'
             }
-        }
+        },
+        '/test/post'
     ],
 
     /**
@@ -204,6 +224,17 @@ module.exports = {
         {
             match: '/data/list',
             mock: 'data/list.json'
+        },
+        {
+            match: '/data/smarty'
+        },
+        {
+            match: '/data/smarty2',
+            mock: './data/data2.smarty'
+        },
+        {
+            match: '/data/smarty3',
+            mock: './data/data3.smarty'
         },
         {
             match: '/php',
@@ -294,7 +325,7 @@ module.exports = {
      *      }
      * }
      *
-     * 当前内置 js mock 文件 和 静态资源文件处理器：
+     * 当前内置处理器：
      *
      * 1）js processor
      * 注意：如果当前请求是GET请求且不是请求JS资源文件或者请求是POST请求，且指定的自动响应文件
@@ -316,6 +347,52 @@ module.exports = {
      *
      * 2）static processor
      * 对于其它资源类型的 mock 文件，直接将文件响应，不做处理，响应内容类型，根据文件的扩展名类型
+     *
+     * 3) php processor
+     * 可以指定 mock 文件为 php 文件，默认使用 php-cgi 解析 php 文件，可以通过如下方式，指定自己的：
+     * php: {
+     *     bin: '/usr/local/php/bin/php-cgi'
+     * }
+     *
+     * 4) smarty processor
+     * 可以通过撰写 json 文件 输出成 smarty 模板，再由 php 解析，支持如下选项配置：
+     * smarty: {
+     *
+     *      // 指定初始化配置文件，相对于 `responseDir`，比如 smarty 界定符
+     *      initerFile: './initer.php',
+     *
+     *      // 指定渲染 smarty 模板的 php 文件，路径相对于 `responseDir`，如果指定的文件不存在，
+     *      // 默认会自动生成，建议自动生成后，再自行修改该文件内容，如果有需要的话
+     *      renderFile: 'autoresponse.php',
+     *
+     *      // php 处理器的选项配置，该选项配置跟 php 处理器的配置是分开的，不是共用的，即两边的
+     *      // 配置不会互相影响
+     *      php: {}
+     * }
+     *
+     * mock 数据有两种使用场景：
+     * a. 将 json 数据转成 smarty 模板渲染，输出 html
+     * {
+     *     _process: 'smarty', // 指定该 json 数据要由 `smarty` 进行后处理
+     *     _tpl: 'a/b.tpl'     // 指定渲染的模板名称
+     *     _data: {            // 指定渲染模板的数据，可以把 _data 下的数据提取出来跟 _tpl 平级放
+     *          extData: {},
+     *          tplData: {}
+     *     }
+     * }
+     *
+     * b. 将 json 数据某个字段值，替换成 smarty 渲染结果
+     * {
+     *    _process: 'smarty',
+     *    filters: [],
+     *    tpl: { // tpl 值最后将替换为 _tpl 渲染后的结果
+     *      _tpl: 'a/b.tpl',
+     *      _data: {
+     *          extData: {},
+     *          tplData: {}
+     *      }
+     *    }
+     * }
      *
      * @type {Object}
      */

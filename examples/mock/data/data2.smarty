@@ -1,0 +1,6 @@
+{
+    "_tpl": "a/b.tpl",
+    "data": {
+        "type": "smarty"
+    }
+}
