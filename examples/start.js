@@ -3,10 +3,18 @@ var connect = require('connect');
 
 var app = connect();
 
-// wathc: 监控配置文件变化是否重新reload
+// watch: 监控配置文件变化是否重新reload
 // logLevel: 设置控制台打印 log level，如果不想输出太多log信息，可以把log level调高，建议 error
 // refer: https://github.com/nomiddlename/log4js-node
-var autoresponse = require('../index')({ watch: true, logLevel: 'debug' });
+var autoresponse = require('../index')({
+    watch: true, logLevel: 'debug', handlers: [
+        // 增加自定义处理器
+        function (context, options, next) {
+            console.log(context.content);
+            next();
+        }
+    ]
+});
 app.use(autoresponse);
 app.use('/account/getUserInfo', function (req, res) {
     res.writeHead(200, {

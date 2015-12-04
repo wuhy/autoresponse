@@ -24,7 +24,7 @@ var workingDir = process.cwd();
 var configFile = 'autoresponse-config.js';
 
 /**
- * 加载用户自定义的配置文件：<workingDir>/autoresponse-config.js
+ * 加载用户自定义的配置文件：<root>/autoresponse-config.js
  *
  * @param {string} configFilePath 配置文件路径
  * @return {Object}
@@ -59,7 +59,8 @@ function getAutoresponseOptions(userConf) {
     var options = {};
 
     var watch = userConf.watch;
-    var configFilePath = pathUtil.join(workingDir, configFile);
+    var root = userConf.root || workingDir;
+    var configFilePath = pathUtil.join(root, configFile);
     var hasCustomConfFile = fs.existsSync(configFilePath);
 
     var updateConfHandler = function (path) {
@@ -84,7 +85,7 @@ function getAutoresponseOptions(userConf) {
         }
 
         // 添加配置的路径的基目录，配置文件的路径，都是相对于该属性值
-        options.baseDir = workingDir;
+        options.baseDir = root;
     };
 
     if (hasCustomConfFile) {
@@ -108,6 +109,7 @@ function getAutoresponseOptions(userConf) {
  *                 接口规范，另一种是 `edp webserver` 中间件
  *                 有效值 `edp` 或者 不传
  * @param {Object=} userConf 用户自定义的自动响应配置，可选，优先级高于配置文件
+ * @param {string=} useConf.root mock 配置文件的根目录，可选，默认当前运行目录
  * @return {Function}
  */
 module.exports = exports = function (type, userConf) {

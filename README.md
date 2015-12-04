@@ -26,11 +26,11 @@ app.use(connect.static('./webroot'));
 ```javascript
 var autoresponse = require('autoresponse')({
     logLevel: 'info',
-    get: [
+    get: {
         match: function (reqPathName) { // mock all `/xx/xx` path
             return !/\.\w+(\?.*)?$/.test(reqPathName);
         }
-    ]
+    }
 });
 ```
 
