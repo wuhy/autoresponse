@@ -26,6 +26,7 @@ app.use(connect.static('./webroot'));
 ```javascript
 var autoresponse = require('autoresponse')({
     logLevel: 'info',
+    post: true,
     get: {
         match: function (reqPathName) { // mock all `/xx/xx` path
             return !/\.\w+(\?.*)?$/.test(reqPathName);
@@ -33,6 +34,14 @@ var autoresponse = require('autoresponse')({
     }
 });
 ```
+
+推荐按上面方式进行 mock，简单直接，无需频繁添加 mock 请求：所有 post 请求 和 满足条件的 get 请求都将被 mock（要求 get pathname 为 `/xx/xx` 不带文件名后缀，可以根据实际业务情况，进行这个逻辑调整）。
+
+默认的 mock 文件跟请求的路径名一一对应，比如：请求 a/b/c，则 mock 文件为：<projectDir>/mock/a/b/c.js。触发该 mock 请求的时候，**默认如果 mock 文件不存在会自动创建该文件**。
+
+mock 文件支持 `js`、`json`、`php` 等文件类型的 mock，对于使用 `smarty` 渲染的页面，也可以直接用 `js` 进行 mock，无需使用 `php`，更多 mock 配置和使用参见下面说明。
+
+此外，mock 提供了一些常用的[助手方法](#helper)
 
 ## Using with [edp webserver](https://github.com/ecomfe/edp-webserver)
 
@@ -226,7 +235,7 @@ $smarty->setCompileDir($project_root . '/templates_c/');
         ```
 
 
-## Using mock helper method
+## Using mock helper method <a name="helper"></a>
 
 By default, if you use js file to mock, you can access `mock` global variable in your mock file.
 
