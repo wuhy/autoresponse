@@ -73,7 +73,7 @@ exports.getLocations = function () {
 
 ## A simple autoresponse configure example
 
-Create `autoreponse-config.js` file in your web document root.
+Create `autoresponse-config.js` file in your web document root.
 
 ```javascript
 module.exports = {
