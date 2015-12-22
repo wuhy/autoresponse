@@ -259,4 +259,4 @@ The following methods are provided by default:
 * `mock.faker(locale)`: get `faker` instance with the specified locale, the locale argument is default english
 
 
-More details, please refer to the annotation of `autorespponse-config.js`.
+More details, please refer to the annotation of `autoresponse-config.js`.
