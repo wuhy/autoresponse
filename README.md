@@ -1,8 +1,8 @@
 
-autoresponse
+autoresponse [![NPM Version](https://img.shields.io/npm/v/autoresponse.svg?style=flat)](https://npmjs.org/package/autoresponse)
 ========
 
-自动响应请求中间件，可用于本地搭建的 node web server 请求 mock，支持本地 mock 和 代理。
+> A connect middleware for mocking the http request
 
 ## Install
 
@@ -10,7 +10,7 @@ autoresponse
 npm install autoresponse
 ```
 
-## Using with connect middleware
+## Using as connect middleware
 
 ```javascript
 var autoresponse = require('autoresponse')({ 
