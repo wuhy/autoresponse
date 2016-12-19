@@ -12,7 +12,7 @@ var edpAutoresponse = require('./lib/edp-autoresponse');
 var autoresponse = require('./lib/autoresponse');
 var defaultOptions = require('./lib/autoresponse-config');
 var mockHelper = require('./lib/processor/mock-helper');
-var logger = require('./lib/logger');
+var logger = require('./lib/util/log');
 
 var workingDir = process.cwd();
 
@@ -123,7 +123,11 @@ module.exports = exports = function (type, userConf) {
     // 设置 log level
     var logLevel = userConf.logLevel;
     if (logLevel) {
-        logger.setLevel(String(logLevel).toUpperCase());
+        logger.setLogLevel(String(logLevel).toUpperCase());
+    }
+
+    if (userConf.logger) {
+        logger.log = userConf.logger;
     }
 
     logger.info('enable autoresponse middleware...');
