@@ -22,18 +22,18 @@
   },
   "homepage": "https://github.com/wuhy/autoresponse",
   "dependencies": {
-    "chokidar": "^1.0.5",
-    "etpl": "^3.0.1",
-    "faker": "^3.0.1",
-    "formidable": "^1.0.14",
-    "http-proxy": "^1.1.4",
+    "chalk": "^1.1.3",
+    "chokidar": "^1.6.1",
+    "etpl": "^3.2.0",
+    "faker": "^3.1.0",
+    "formidable": "^1.0.17",
+    "http-proxy": "^1.16.2",
     "lodash": "^2.4.1",
-    "log4js": "^0.6.14",
-    "mime": "^1.2.11",
-    "moment": "^2.10.6",
-    "qs": "^0.6.6"
+    "mime": "^1.3.4",
+    "moment": "^2.17.1",
+    "qs": "^6.3.0"
   },
   "devDependencies": {
-    "connect": "^2.19.6"
+    "connect": "^3.5.0"
   }
 }
