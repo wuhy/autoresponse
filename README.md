@@ -245,7 +245,7 @@ The following methods are provided by default:
 
 * `mock.m`: [moment](http://momentjs.com/docs/) variable
 
-* `mock.fake(format, locale)`: the encapsulation of [faker](http://marak.com/faker.js/)
+* `mock.fake(format, locale)`: the encapsulation of [faker](https://github.com/Marak/faker.js/)
 
     ```javascript
     // more api and variable name, please refer faker api docs
