@@ -2,7 +2,7 @@
 autoresponse [![NPM Version](https://img.shields.io/npm/v/autoresponse.svg?style=flat)](https://npmjs.org/package/autoresponse)
 ========
 
-> A connect middleware for mocking the http request, supporting `edp-webserver` and `webpack-dev-server` mock.
+> A connect middleware for mocking the http request, supporting `edp-webserver` and `webpack-dev-server` mocking
 
 ## Install
 
@@ -12,12 +12,13 @@ npm install autoresponse
 
 ## Usage
 
-The `autoresponse` mock config, you can specify by a `autoresponse-config.js` config file or passing the mock config params. Using config file see [here](#config-file).
+The `autoresponse` mock config, you can specify by a `autoresponse-config.js` config file or passing the mock config params.
 
 ```javascript
 var autoresponse = require('autoresponse')({
     logLevel: 'info', // the level to print log info
     post: true,       // mock all post request
+    patch: true,      // mock all patch request
     get: {
         match: function (reqPathName) { // mock all `/xx/xx` path
             return !/\.\w+(\?.*)?$/.test(reqPathName);
@@ -26,13 +27,47 @@ var autoresponse = require('autoresponse')({
 });
 ```
 
-By default the mock file path is the same as the request url pathname, e.g., the request pathname is `/a/b`, the default mock file path: `<projectRoot>/mock/a/b.js`. If the mock file is not existed, `autoresponse` will auto create the mock file basing the mock file template.
+By default the mock file path is the same as the request url pathname, e.g., the request pathname is `/a/b`, the default mock file path is `<projectRoot>/mock/a/b.js`. If the mock file is not existed, `autoresponse` will auto create the mock file basing the mock file template.
 
-`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template rendered without needing `php` programming. If not suitable mock handler, you also can custom.
+The mock file like this:
+```javascript
+module.exports = function (path, queryParam, postParam, context) {
+    return {
+        'timeout': 50,          // response timeout, unit is millisecond, default is 0
+        '_timeout': 50,         // The same as timeout
+        '_status': 200,         // The response http status code, by default 200
+        '_header': {},          // The response header
+        '_data': {},            // The response data
+        '_jsonp': false,        // response jsonp
+        '_callback': 'callback' // The jsonp callback param name, default: callback
+    };
+};
+```
 
-Moreover, `autoresponse` provide some useful [mock helpers](#helper).
+If the same request need to mock different request method, you can also write the mock data, like this:
 
-**Tip** if you need modify the mock config frequently, the best selection is using `autoresponse-config.js` config file, `autoresponse` support auto reload config file by using `watch: true` option.
+```javascript
+module.exports = {
+    // mock the post request
+    post: function (path, queryParam, postParam, context) {
+        return {
+            // ...
+        };
+    },
+
+    // mock the patch request
+    patch: {
+        status: 0,
+        statusInfo: 'patch ok'
+    }
+};
+```
+
+`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template rendered without needing `php` programming. If not suitable mock handler, you can also custom it.
+
+Moreover, `autoresponse` provide some useful [mock helpers](#helper) to help generating mock data.
+
+**Tip:** If you need modify the mock config frequently, the best selection is using `autoresponse-config.js` config file, `autoresponse` support auto reload config file by using `watch: true` option without having to restart the dev server. The more usage information you can see [here](#config-file).
 
 The more detail usage, you can see [examples](https://github.com/wuhy/autoresponse/tree/master/examples).
 
@@ -40,8 +75,8 @@ The more detail usage, you can see [examples](https://github.com/wuhy/autorespon
 
 ```javascript
 var autoresponse = require('autoresponse')({ 
-    watch: true,      // reload autoresponse-config.js file when the file is changed
-    logLevel: 'info'  // the log level to be printed
+    logLevel: 'info',
+    post: true
 });
 app.use(autoresponse);
 
@@ -105,6 +140,8 @@ exports.getLocations = function () {
 
 ## Using mock config file <a name="config-file"></a>
 
+Create `autoresponse` middleware:
+
 ```javascript
 var autoresponse = require('autoresponse')({
     // specify whether need auto reload config file when config file change
@@ -112,7 +149,7 @@ var autoresponse = require('autoresponse')({
 });
 ```
 
-Create `autoresponse-config.js` file in your web document root.
+Create `autoresponse-config.js` file in your web document root, the config file content like the following:
 
 ```javascript
 module.exports = {
@@ -298,4 +335,4 @@ The following methods are provided by default:
 * `mock.faker(locale)`: get `faker` instance with the specified locale, the locale argument is default english
 
 
-More details, please refer to the annotation of `autoresponse-config.js`.
+More details, please refer to the [autoresponse-config.js](https://github.com/wuhy/autoresponse/blob/master/lib/autoresponse-config.js).
