@@ -2,7 +2,7 @@
 autoresponse [![NPM Version](https://img.shields.io/npm/v/autoresponse.svg?style=flat)](https://npmjs.org/package/autoresponse)
 ========
 
-> A connect middleware for mocking the http request
+> A connect middleware for mocking the http request, supporting `edp-webserver` and `webpack-dev-server` mock.
 
 ## Install
 
@@ -10,23 +10,14 @@ autoresponse [![NPM Version](https://img.shields.io/npm/v/autoresponse.svg?style
 npm install autoresponse
 ```
 
-## Using as connect middleware
+## Usage
 
-```javascript
-var autoresponse = require('autoresponse')({ 
-    watch: true,      // reload autoresponse-config.js file when the file is changed
-    logLevel: 'info'  // the log level to be printed
-});
-app.use(autoresponse);
-app.use(connect.static('./webroot'));
-```
-
-自动响应配置，可以通过上述参数配置传入，如果有频繁修改 mock 的映射的，建议通过 `autoresponse-config.js` 配置文件定义，关于配置说明请参考 `examples` 目录，否则可以直接通过创建 `autoresponse` 实例时候直接传入：
+The `autoresponse` mock config, you can specify by a `autoresponse-config.js` config file or passing the mock config params. Using config file see [here](#config-file).
 
 ```javascript
 var autoresponse = require('autoresponse')({
-    logLevel: 'info',
-    post: true,
+    logLevel: 'info', // the level to print log info
+    post: true,       // mock all post request
     get: {
         match: function (reqPathName) { // mock all `/xx/xx` path
             return !/\.\w+(\?.*)?$/.test(reqPathName);
@@ -35,15 +26,56 @@ var autoresponse = require('autoresponse')({
 });
 ```
 
-推荐按上面方式进行 mock，简单直接，无需频繁添加 mock 请求：所有 post 请求 和 满足条件的 get 请求都将被 mock（要求 get pathname 为 `/xx/xx` 不带文件名后缀，可以根据实际业务情况，进行这个逻辑调整）。
+By default the mock file path is the same as the request url pathname, e.g., the request pathname is `/a/b`, the default mock file path: `<projectRoot>/mock/a/b.js`. If the mock file is not existed, `autoresponse` will auto create the mock file basing the mock file template.
 
-默认的 mock 文件跟请求的路径名一一对应，比如：请求 a/b/c，则 mock 文件为：<projectDir>/mock/a/b/c.js。触发该 mock 请求的时候，**默认如果 mock 文件不存在会自动创建该文件**。
+`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template rendered without needing `php` programming. If not suitable mock handler, you also can custom.
 
-mock 文件支持 `js`、`json`、`php` 等文件类型的 mock，对于使用 `smarty` 渲染的页面，也可以直接用 `js` 进行 mock，无需使用 `php`，更多 mock 配置和使用参见下面说明。
+Moreover, `autoresponse` provide some useful [mock helpers](#helper).
 
-此外，mock 提供了一些常用的[助手方法](#helper)
+**Tip** if you need modify the mock config frequently, the best selection is using `autoresponse-config.js` config file, `autoresponse` support auto reload config file by using `watch: true` option.
 
-## Using with [edp webserver](https://github.com/ecomfe/edp-webserver)
+The more detail usage, you can see [examples](https://github.com/wuhy/autoresponse/tree/master/examples).
+
+## Using as a connect middleware
+
+```javascript
+var autoresponse = require('autoresponse')({ 
+    watch: true,      // reload autoresponse-config.js file when the file is changed
+    logLevel: 'info'  // the log level to be printed
+});
+app.use(autoresponse);
+
+var serveStatic = require('serve-static');
+app.use(serveStatic('./webroot'));
+```
+
+## Using in webpack-dev-server
+
+[webpack-dev-server](https://github.com/webpack/webpack-dev-server) is developed based on `express`, so `autoresponse` can as a middleware served it using `setup` option.
+ 
+ ```javascript
+ var compiler = Webpack(webpackConfig);
+ var server = new WebpackDevServer(compiler, {
+     // install middlewares
+     setup: function (app) {
+         var autoresponse = require('autoresponse');
+         app.use(autoresponse({
+             logLevel: 'debug',
+             root: projectRootPath, // you can specify the project root path
+             post: true, // mock all post request
+             patch: true // mock all patch request
+         }));
+     }
+ });
+ 
+ server.listen(8888, function() {
+     console.log('Starting server on port 8888...');
+ });
+ ```
+
+## Using in edp-webserver
+
+If you use [EDP](https://github.com/ecomfe/edp) solution, you can also use `autoresponse` middleware in [edp-webserver](https://github.com/ecomfe/edp-webserver) to mock the http request.
 
 ```javascript
 exports.getLocations = function () {
@@ -58,7 +90,7 @@ exports.getLocations = function () {
                 file()
             ]
         },
-        // ...
+        // add autoresposne mock handler
         require('autoresponse')('edp', { watch: true, logLevel: 'info' }),
         { 
             location: /^.*$/, 
@@ -71,7 +103,14 @@ exports.getLocations = function () {
 };
 ```
 
-## A simple autoresponse configure example
+## Using mock config file <a name="config-file"></a>
+
+```javascript
+var autoresponse = require('autoresponse')({
+    // specify whether need auto reload config file when config file change
+    watch: true 
+});
+```
 
 Create `autoresponse-config.js` file in your web document root.
 
