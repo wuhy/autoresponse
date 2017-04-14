@@ -37,10 +37,17 @@ module.exports = function (path, queryParam, postParam, context) {
         '_timeout': 50,         // The same as timeout
         '_status': 200,         // The response http status code, by default 200
         '_header': {},          // The response header
-        '_data': {},            // The response data
+        '_data': {},            // The response mock data
         '_jsonp': false,        // response jsonp
         '_callback': 'callback' // The jsonp callback param name, default: callback
     };
+    
+    // mock data placed in `_data` is not required, the following is also valid
+    // return {
+    //    timeout: 10,
+    //    status: 0,
+    //    statusInfo: {}
+    // };
 };
 ```
 
@@ -63,7 +70,7 @@ module.exports = {
 };
 ```
 
-`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template rendered without needing `php` programming. If not suitable mock handler, you can also custom it.
+`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template rendered without needing `php` programming. If  there is not suitable mock handler, you can also custom it.
 
 Moreover, `autoresponse` provide some useful [mock helpers](#helper) to help generating mock data.
 
