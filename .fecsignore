@@ -3,3 +3,4 @@ dep/**/*
 test/**/*
 mock/**/*
 examples/**/*
+output/**/*
