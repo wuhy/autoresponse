@@ -4,7 +4,7 @@
   "description": "Autoresponse middleare using local data or proxy",
   "main": "index.js",
   "scripts": {
-    "pretest": "jshint . > jshint.report",
+    "pretest": "fecs check",
     "test": "jasmine-node test"
   },
   "repository": {
@@ -34,6 +34,8 @@
     "qs": "^6.3.0"
   },
   "devDependencies": {
-    "connect": "^3.5.0"
+    "connect": "^3.5.0",
+    "jasmine-node": "^1.14.5",
+    "serve-static": "^1.12.1"
   }
 }
