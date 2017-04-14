@@ -1,6 +1,5 @@
 var http = require('http');
 var connect = require('connect');
-
 var app = connect();
 
 // watch: 监控配置文件变化是否重新reload
@@ -10,7 +9,7 @@ var autoresponse = require('../index')({
     watch: true, logLevel: 'debug', handlers: [
         // 增加自定义处理器
         function (context, options, next) {
-            console.log(context.content);
+            console.log('custom handle:', context.content);
             next();
         }
     ]
@@ -46,7 +45,8 @@ app.use('/data/test.php', function (req, res) {
     res.end('<html><head><title>Test PHP Proxy</title></head><body>Hello PHP</body></html>');
 });
 
-app.use(connect.static('./fixtures'));
+var serveStatic = require('serve-static');
+app.use(serveStatic('./fixtures'));
 
 var httpServer = http.createServer(app);
 var port = 9090;

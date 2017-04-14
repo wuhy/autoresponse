@@ -201,6 +201,20 @@ module.exports = {
                 proxy: 'localhost:7979'
             }
         },
+        {
+            match: '/test/post',
+            mock: {
+                jsonp: true,
+                callback: 'my_callback'
+            }
+        }
+    ],
+
+
+    /**
+     * 其他请求 方法 mock 配置同 get/post
+     */
+    patch: [
         '/test/post'
     ],
 
