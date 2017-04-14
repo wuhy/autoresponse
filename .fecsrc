@@ -1,0 +1,10 @@
+{
+    "eslint": {
+        "env": {
+            "node": true,
+            "browser": false
+        },
+
+        "rules": {}
+    }
+}
