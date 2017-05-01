@@ -13,6 +13,7 @@ var autoresponse = require('./lib/autoresponse');
 var defaultOptions = require('./lib/autoresponse-config');
 var mockHelper = require('./lib/processor/mock-helper');
 var logger = require('./lib/util/log');
+var ruleParser = require('./lib/rule-parser');
 
 var workingDir = process.cwd();
 
@@ -86,6 +87,9 @@ function getAutoresponseOptions(userConf) {
 
         // 添加配置的路径的基目录，配置文件的路径，都是相对于该属性值
         options.baseDir = root;
+
+        // 清空缓存的 rule 编译
+        ruleParser.clearCache();
     };
 
     if (hasCustomConfFile) {
