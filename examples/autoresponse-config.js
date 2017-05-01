@@ -263,6 +263,13 @@ module.exports = {
             mock: {
                 path: '/data/test.php'
             }
+        },
+        {
+            match: '/a/b',
+            mock: 'data/ab.js'
+        },
+        {
+            match: '/users/:id'
         }
     ],
 
@@ -299,6 +306,31 @@ module.exports = {
             }
         ]
     },
+
+    /**
+     * 自定义的 mock 规则，支持 express style path mock，优先级高于 get/post/../query
+     * mock 规则定义
+     *
+     * @type {Array}
+     */
+    rules: [
+        {
+            match: '/a/b', // match 设置同 get/post
+            mock: 'data/ab2.js', // mock 设置同 get/post
+            method: ['get', 'post']
+        },
+        {
+            match: '/a/:id/c' // 默认支持所有请求方法 mock
+        },
+        {
+            match: '/courses',
+            method: 'post'
+        },
+        {
+            match: '/courses/:id',
+            method: ['get', 'patch']
+        }
+    ],
 
     /**
      * 如果配置了代理，对于上述配置的 post/get/query 所有匹配到请求，如果自身没有指定代理，
