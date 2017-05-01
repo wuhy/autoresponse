@@ -311,7 +311,7 @@ module.exports = {
      * 自定义的 mock 规则，支持 express style path mock，优先级高于 get/post/../query
      * mock 规则定义
      *
-     * @type {Array}
+     * @type {Array|Object}
      */
     rules: [
         {
