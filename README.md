@@ -23,7 +23,27 @@ var autoresponse = require('autoresponse')({
         match: function (reqPathName) { // mock all `/xx/xx` path
             return !/\.\w+(\?.*)?$/.test(reqPathName);
         }
-    }
+    },
+    
+    // or using rules options, support request methods setting
+    // the rules option priority is higher than the outside `get`/`post`/... request
+    // method mock rule
+    rules: [ 
+        {
+            // by default mock all methods, if method option is not set
+            match: '/users/:id', // by default use `users.js` mock file
+            method: ['get', 'patch']
+        },
+        {
+            match: function (reqPathName, reqMethod) {
+                return true;
+            },
+            mock: function (reqPathName, reqMethod) {
+                return 'custom/myMockFile.js';
+            },
+            method: 'post'
+        }
+    ]
 });
 ```
 
@@ -57,6 +77,7 @@ If the same request need to mock different request method, you can also write th
 module.exports = {
     // mock the post request
     post: function (path, queryParam, postParam, context) {
+        var params = context.params; // the restful path param
         return {
             // ...
         };
