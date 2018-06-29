@@ -2,7 +2,7 @@
 autoresponse [![NPM Version](https://img.shields.io/npm/v/autoresponse.svg?style=flat)](https://npmjs.org/package/autoresponse)
 ========
 
-> A connect middleware for mocking the http request, supporting `edp-webserver` and `webpack-dev-server` mocking
+> A connect middleware for mocking the http request, can used in `edp-webserver` or `webpack-dev-server` mocking
 
 ## Install
 
@@ -91,11 +91,11 @@ module.exports = {
 };
 ```
 
-`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template rendered without needing `php` programming. If  there is not suitable mock handler, you can also custom it.
+`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template without needing `php` programming. If  there is not available mock handler, you can also custom it by yourself.
 
 Moreover, `autoresponse` provide some useful [mock helpers](#helper) to help generating mock data.
 
-**Tip:** If you need modify the mock config frequently, the best selection is using `autoresponse-config.js` config file, `autoresponse` support auto reload config file by using `watch: true` option without having to restart the dev server. The more usage information you can see [here](#config-file).
+**Tip:** If you need modify the mock config frequently, the best choice is using `autoresponse-config.js` config file, `autoresponse` support auto reload config file by using `watch: true` option without having to restart the dev server. The more usage information you can see [here](#config-file).
 
 The more detail usage, you can see [examples](https://github.com/wuhy/autoresponse/tree/master/examples).
 
