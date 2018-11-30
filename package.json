@@ -1,6 +1,6 @@
 {
   "name": "autoresponse",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Autoresponse middleare using local data or proxy",
   "main": "index.js",
   "scripts": {
