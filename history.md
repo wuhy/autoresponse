@@ -1,3 +1,9 @@
+0.2.3 / 2018-11-30
+===================
+
+* [^] 修复请求路径重写出现 `null` 问题 [8949615](https://github.com/wuhy/autoresponse/commit/8949615)
+* [^] 修复查询参数正则 [5c7d92c](https://github.com/wuhy/autoresponse/commit/5c7d92c)
+
 0.1.3 / 2015-08-19
 ===================
 
