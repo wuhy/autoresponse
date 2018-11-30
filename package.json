@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "fecs check",
-    "test": "jasmine-node test"
+    "test": "jasmine \"test/**/*.spec.js\""
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "connect": "^3.5.0",
-    "jasmine-node": "^1.14.5",
+    "jasmine": "^3.3.0",
     "serve-static": "^1.12.1"
   },
   "engine": {
