@@ -24,11 +24,11 @@ var autoresponse = require('autoresponse')({
             return !/\.\w+(\?.*)?$/.test(reqPathName);
         }
     },
-    
+
     // or using rules options, support request methods setting
     // the rules option priority is higher than the outside `get`/`post`/... request
     // method mock rule
-    rules: [ 
+    rules: [
         {
             // by default mock all methods, if method option is not set
             match: '/users/:id', // by default use `users.js` mock file
@@ -61,7 +61,7 @@ module.exports = function (path, queryParam, postParam, context) {
         '_jsonp': false,        // response jsonp
         '_callback': 'callback' // The jsonp callback param name, default: callback
     };
-    
+
     // mock data placed in `_data` is not required, the following is also valid
     // return {
     //    timeout: 10,
@@ -91,7 +91,7 @@ module.exports = {
 };
 ```
 
-`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template without needing `php` programming. If  there is not available mock handler, you can also custom it by yourself.
+`Autoresponse` supports any file types mocking, you can using `js file`, `json file` or any other custom mock syntax to generate the mock data. For example, you can using `js` to mock `smarty` template without needing `php` programming. If there is none available mock handler, you can also custom it by yourself.
 
 Moreover, `autoresponse` provide some useful [mock helpers](#helper) to help generating mock data.
 
@@ -102,7 +102,7 @@ The more detail usage, you can see [examples](https://github.com/wuhy/autorespon
 ## Using as a connect middleware
 
 ```javascript
-var autoresponse = require('autoresponse')({ 
+var autoresponse = require('autoresponse')({
     logLevel: 'info',
     post: true
 });
@@ -115,7 +115,7 @@ app.use(serveStatic('./webroot'));
 ## Using in webpack-dev-server
 
 [webpack-dev-server](https://github.com/webpack/webpack-dev-server) is developed based on `express`, so `autoresponse` can as a middleware served it using `setup` option.
- 
+
  ```javascript
  var compiler = Webpack(webpackConfig);
  var server = new WebpackDevServer(compiler, {
@@ -130,7 +130,7 @@ app.use(serveStatic('./webroot'));
          }));
      }
  });
- 
+
  server.listen(8888, function() {
      console.log('Starting server on port 8888...');
  });
@@ -143,8 +143,8 @@ If you use [EDP](https://github.com/ecomfe/edp) solution, you can also use `auto
 ```javascript
 exports.getLocations = function () {
     return [
-        { 
-            location: '/', 
+        {
+            location: '/',
             handler: home( 'index.html' )
         },
         {
@@ -155,8 +155,8 @@ exports.getLocations = function () {
         },
         // add autoresposne mock handler
         require('autoresponse')('edp', { watch: true, logLevel: 'info' }),
-        { 
-            location: /^.*$/, 
+        {
+            location: /^.*$/,
             handler: [
                 file(),
                 proxyNoneExists()
@@ -173,7 +173,7 @@ Create `autoresponse` middleware:
 ```javascript
 var autoresponse = require('autoresponse')({
     // specify whether need auto reload config file when config file change
-    watch: true 
+    watch: true
 });
 ```
 
@@ -205,7 +205,7 @@ module.exports = {
         {
             // default mock file: <responseDir>/user/profile.js
             // it'will be processed as a node module by builtin js-processor
-            match: '/user/profile' 
+            match: '/user/profile'
         },
         {
             match: '/data/list',
@@ -227,7 +227,7 @@ module.exports = {
                 match: 'a/b'
             };
         }
-    ] 
+    ]
 };
 ```
 
