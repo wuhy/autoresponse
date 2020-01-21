@@ -28,11 +28,11 @@ module.exports = {
      * </code>
      *
      * lodash api: <https://lodash.com/docs>
-     * moment api: <http://momentjs.com/docs/>
+     * dayjs api: <https://github.com/iamkun/dayjs>
      *
      * @type {Object}
      */
-    helper: {_: 'lodash', m: 'moment'},
+    helper: {_: 'lodash', m: 'dayjs'},
 
 
     /**
