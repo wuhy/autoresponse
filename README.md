@@ -121,8 +121,8 @@ app.use(serveStatic("./webroot"));
 ```javascript
 var compiler = Webpack(webpackConfig);
 var server = new WebpackDevServer(compiler, {
-    // install middlewares，if you use webpack3+, using `before` option instead of `setup` option
-    setup: function(app) {
+    // install middlewares，if your webpack version is less than 3.0.0, using `setup` option instead of `before` option
+    before: function(app) {
         var autoresponse = require("autoresponse");
         app.use(
             autoresponse({
